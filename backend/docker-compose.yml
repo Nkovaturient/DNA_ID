@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  powergate:
+    image: textile/powergate:latest
+    ports:
+      - "6002:6002"
+      - "6060:6060"  # Prometheus metrics
+    environment:
+      - LOTUS_CLIENT_API_INFO=/ip4/127.0.0.1/tcp/1234/http
+      - POWERGATE_LOG_LEVEL=debug
+    volumes:
+      - powergate_data:/data
+    networks:
+      - helixid_network
+
+  ipfs:
+    image: ipfs/go-ipfs:latest
+    ports:
+      - "5001:5001"  # API
+      - "8080:8080"  # Gateway
+    volumes:
+      - ipfs_data:/data/ipfs
+    networks:
+      - helixid_network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - helixid_network
+
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=helixid
+      - POSTGRES_USER=helixid
+      - POSTGRES_PASSWORD=helixid_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - helixid_network
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - POWERGATE_HOST=http://powergate:6002
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=postgresql://helixid:helixid_password@postgres:5432/helixid
+    depends_on:
+      - powergate
+      - redis
+      - postgres
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - helixid_network
+    command: npm run dev
+
+volumes:
+  powergate_data:
+  ipfs_data:
+  redis_data:
+  postgres_data:
+
+networks:
+  helixid_network:
+    driver: bridge
