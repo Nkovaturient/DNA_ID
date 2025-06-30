@@ -1,7 +1,8 @@
 # DNA_ID
 
-![DNA_ID Logo](public/logo.png)
-
+<p align="center">
+  <img src="public/logo.png" alt="DNA_ID Logo" width="120" height="120" />
+</p>
 ---
 
 ## Objectives
@@ -40,7 +41,7 @@
 ```mermaid
 flowchart TD
     A[Harvest Metadata from Dataverse]
-    B[AI Enrichment (LangChain)]
+    B[AI Enrichment (BioAgents)]
     C[GDPR Compliance Check]
     D[Issue DID & Verifiable Credential]
     E[Publish to OriginTrail DKG (optional)]
@@ -95,8 +96,6 @@ flowchart TD
 2. **Install dependencies:**
    ```bash
    npm install
-   # or
-   yarn install
    ```
 3. **Set up environment variables:**
    - Copy `.env.example` to `.env` and fill in required values (Dataverse API, blockchain endpoints, etc).
@@ -153,4 +152,6 @@ flowchart TD
 
 ---
 
-> _Thank You! The cosmic sea of knowledge flows in our **DNA**, monitored and enhanced by **AI**, providing a decentralized, authenticated **ID**, hence the name - **DNA_ID**_ 
+> _The cosmic sea of knowledge flows in our **DNA**, monitored and enhanced by **AI**, providing a decentralized, authenticated **ID**, hence the name - **DNA_ID**_
+
+> Thank You![🧬 🤖 🆔 ]
