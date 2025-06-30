@@ -1,9 +1,10 @@
-# DNA_ID
+# DNA_ID 
+
 
 <p align="center">
-  <img src="public/logo.png" alt="DNA_ID Logo" width="120" height="120" />
+  <img src="public/logo.png" alt="DNA_ID Logo" width="240" height="240" />
+<!--   <img src="https://github.com/user-attachments/assets/82c3262e-76c0-4c4c-87c5-dc0ee1be8896" width = '120' height='240' /> -->
 </p>
----
 
 ## Objectives
 - **A scalable, GDPR-compliant Decentralised Identifier (DID) system** as a sustainable, user-centric addition to existing persistent identifier infrastructures (DOI, Handle).
