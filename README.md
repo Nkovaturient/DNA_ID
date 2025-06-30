@@ -19,7 +19,7 @@
 
 ## About Me
 **Project Lead:** Neha Kumari 
-[X](https://x.com/matriX_Nk) | [LinkedIn](https://linkedin.com/in/neha_kumari711) | [GitHub](https://github.com/Nkovaturient)
+[X](https://x.com/matriX_Nk) | [LinkedIn](https://linkedin.com/in/neha-kumari711) | [GitHub](https://github.com/Nkovaturient)
 
 ---
 
