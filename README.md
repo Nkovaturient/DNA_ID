@@ -42,10 +42,10 @@
 ```mermaid
 flowchart TD
     A[Harvest Metadata from Dataverse]
-    B[AI Enrichment (BioAgents)]
+    B[AI Enrichment via BioAgents]
     C[GDPR Compliance Check]
     D[Issue DID & Verifiable Credential]
-    E[Publish to OriginTrail DKG (optional)]
+    E[Publish to OriginTrail DKG]
     A --> B --> C --> D --> E
 ```
 
