@@ -1,9 +1,7 @@
 {
   "name": "DNA_ID",
   "tagline": "The Double Helix of Trust and Truth",
-  "description": "With the burgeoning influx of knowledge and research data surmounting, there is a need to recognize and analyse how decentralized knowledge (metadata) is created, governed, and consumed-- safely, ethically, and inclusively. Hence, our next-gen decentralized identity infrastructure aims to streamline identification of metadata and knowledge creation."
-  "Powered by the intelligence of BioAgents, reasoning of LangChain, and the permanence of Filecoin via Powergate, DNA_ID anchors verifiable identity through trusted VC issuance, user-centric control and enriched metadata. Seamlessly integrated with the Dataverse ecosystem, its a revolution to one's knowledge coded decentralized identity fostering trust and sustainability ."
-  "Your Data. Your DNA. Proof of You. Decentralized."
+  "description": "With the burgeoning influx of knowledge and research data surmounting, there is a need to recognize and analyse how decentralized knowledge (metadata) is created, governed, and consumed-- safely, ethically, and inclusively. Hence, our next-gen decentralized identity infrastructure aims to streamline identification of metadata and knowledge creation. Powered by the intelligence of BioAgents, reasoning of LangChain, and the permanence of Filecoin via Powergate, DNA_ID anchors verifiable identity through trusted VC issuance, user-centric control and enriched metadata. Seamlessly integrated with the Dataverse ecosystem, its a revolution to one's knowledge coded decentralized identity fostering trust and sustainability . Your Data. Your DNA. Proof of You. Decentralized.",
   "team": [
     {
       "name": "Neha Kumari",
@@ -12,5 +10,5 @@
   ],
   "demo_url": "https://example.com/demo",
   "video_url": "https://youtube.com/watch?v=your-demo-video",
-  "technologies": ["Bio-agents", "Flow", "Dataverse", "Powergate", "Langchain"]
+  "technologies": ["Bio-agents", "Flow", "Dataverse", "Powergate", "Langchain", "Veramo", "OriginTrail", "Filecoin"]
 }
