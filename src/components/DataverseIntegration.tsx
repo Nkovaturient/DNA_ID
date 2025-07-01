@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
-  Database, 
   ExternalLink, 
   Globe, 
   Link, 
   CheckCircle,
-  ArrowRight,
-  Download,
-  Zap,
   RefreshCw,
   AlertTriangle
 } from 'lucide-react';
@@ -156,33 +152,6 @@ const DataverseIntegration: React.FC = () => {
     }, 3000);
   };
 
-  const integrationSteps = [
-    {
-      title: 'Dataset Discovery',
-      description: 'Automatically discover new datasets in Dataverse repositories',
-      icon: Database,
-      status: 'active'
-    },
-    {
-      title: 'Metadata Extraction',
-      description: 'Extract structured metadata using Dataverse REST API',
-      icon: Download,
-      status: 'active'
-    },
-    {
-      title: 'BioAgent Processing',
-      description: 'Process metadata through AI agents for enrichment',
-      icon: Zap,
-      status: 'active'
-    },
-    {
-      title: 'DID Creation',
-      description: 'Generate DID with enriched metadata and link to dataset',
-      icon: Link,
-      status: 'pending'
-    }
-  ];
-
   return (
     <div className="min-h-screen pt-8 pb-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -237,45 +206,6 @@ const DataverseIntegration: React.FC = () => {
                 )}
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Integration Process */}
-        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 dark:border-gray-700 mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-            Integration Process
-          </h2>
-          
-          <div className="grid md:grid-cols-4 gap-4">
-            {integrationSteps.map((step, index) => {
-              const Icon = step.icon;
-              return (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="text-center"
-                >
-                  <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
-                    step.status === 'active' 
-                      ? 'bg-gradient-to-r from-primary-500 to-accent-500' 
-                      : 'bg-gray-300 dark:bg-gray-600'
-                  }`}>
-                    <Icon className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                    {step.title}
-                  </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">
-                    {step.description}
-                  </p>
-                  {index < integrationSteps.length - 1 && (
-                    <ArrowRight className="w-6 h-6 text-gray-300 dark:text-gray-600 mx-auto mt-4 hidden md:block" />
-                  )}
-                </motion.div>
-              );
-            })}
           </div>
         </div>
 

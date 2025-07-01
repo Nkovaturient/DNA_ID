@@ -1,7 +1,7 @@
 {
-  "name": "helixid-backend",
+  "name": "dna_id",
   "version": "1.0.0",
-  "description": "HeliXID Backend - DID Infrastructure with Powergate, BioAgents, and Dataverse Integration",
+  "description": " DID Infrastructure with Powergate, BioAgents, and Dataverse Integration",
   "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon --exec ts-node src/index.ts",

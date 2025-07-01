@@ -1,6 +1,5 @@
 import { AgentPlugin, AgentContext } from '../core/AgentCore';
 import { ChatOpenAI, AzureChatOpenAI} from '@langchain/openai';
-// import { ChatAnthropic } from '@langchain/openai/dist/chat_models';
 import { HumanMessage, SystemMessage } from '@langchain/core/messages';
 import { DatasetMetadata } from './DataverseHarvesterPlugin';
 
