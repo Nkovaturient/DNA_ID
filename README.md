@@ -1,11 +1,12 @@
-# DNA_ID
+# DNA_ID: Your Data. Your DNA. Proof of You. Decentralized
+
 
 <p align="center">
-  <img src="public/logo.png" alt="DNA_ID Logo" width="120" height="120" />
+  <img src="public/logo.png" alt="DNA_ID Logo" width="240" height="240" />
+<!--   <img src="https://github.com/user-attachments/assets/82c3262e-76c0-4c4c-87c5-dc0ee1be8896" width = '120' height='240' /> -->
 </p>
----
 
-## Objectives
+## Objectives : (TL;DR) Analyse how decentralized knowledge (metadata) is created, governed, and consumed-- safely, ethically, and inclusively
 - **A scalable, GDPR-compliant Decentralised Identifier (DID) system** as a sustainable, user-centric addition to existing persistent identifier infrastructures (DOI, Handle).
 - **Integrate with Dataverse** and demonstrate through AI applications to showcase decentralised metadata management and user empowerment in cultural heritage data contexts.
 - **Deliver a prototype DID system compatible with GDPR.**
@@ -18,7 +19,7 @@
 
 ## About Me
 **Project Lead:** Neha Kumari 
-[X](https://x.com/matriX_Nk) | [LinkedIn](https://linkedin.com/in/neha_kumari711) | [GitHub](https://github.com/Nkovaturient)
+[X](https://x.com/matriX_Nk) | [LinkedIn](https://linkedin.com/in/neha-kumari711) | [GitHub](https://github.com/Nkovaturient)
 
 ---
 
@@ -41,10 +42,10 @@
 ```mermaid
 flowchart TD
     A[Harvest Metadata from Dataverse]
-    B[AI Enrichment (BioAgents)]
+    B[AI Enrichment via BioAgents]
     C[GDPR Compliance Check]
     D[Issue DID & Verifiable Credential]
-    E[Publish to OriginTrail DKG (optional)]
+    E[Publish to OriginTrail DKG]
     A --> B --> C --> D --> E
 ```
 
