@@ -3,7 +3,6 @@
 
 <p align="center">
   <img src="public/logo.png" alt="DNA_ID Logo" width="240" height="240" />
-<!--   <img src="https://github.com/user-attachments/assets/82c3262e-76c0-4c4c-87c5-dc0ee1be8896" width = '120' height='240' /> -->
 </p>
 
 ## Objectives : (TL;DR) Analyse how decentralized knowledge (metadata) is created, governed, and consumed-- safely, ethically, and inclusively
@@ -35,6 +34,14 @@
 
 ---
 
+## Architectural Diagram & Flowchart
+
+<p align="center">
+<img width="500" height="700" alt="DNA_ID" src="https://github.com/user-attachments/assets/8e6189df-6c25-459f-953c-317e454958ed" />
+</p>
+
+---
+
 ## BIOAGENTS CUSTOM WORKFLOW BRIDGE
 
 > **Automated pipeline for dataset onboarding, enrichment, compliance, and persistent identifier issuance:**
@@ -47,31 +54,6 @@ flowchart TD
     D[Issue DID & Verifiable Credential]
     E[Publish to OriginTrail DKG]
     A --> B --> C --> D --> E
-```
-
----
-
-## Architectural Diagram & Flowchart
-
-```mermaid
-flowchart TD
-    A[User]
-    B[Frontend: Next.js, Tailwind, Flow SDK]
-    C[Dataverse REST API]
-    D[BioAgents Layer]
-    E[AI Enrichment & GDPR Validation]
-    F[DID Registry: Flow/NEAR]
-    G[Decentralized Storage: IPFS/Filecoin]
-    H[Community/Researchers]
-    
-    A --> B
-    B --> C
-    C --> D
-    D --> E
-    E --> F
-    F --> G
-    G --> C
-    C --> H
 ```
 
 ---
