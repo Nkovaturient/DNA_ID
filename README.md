@@ -5,7 +5,9 @@
   <img src="public/logo.png" alt="DNA_ID Logo" width="240" height="240" />
 </p>
 
-### 🟡🔰 Live Demo Deployed: [DNA_AI](https://dna-id-theta.vercel.app/)
+### 🟡🔰 Live Demo Deployed: 
+- [DNA_ID](https://dna-id-theta.vercel.app/)
+- TL;DR: watch this quick(~3 min) : [YouTube Demo](https://www.youtube.com/watch?v=DvvLaYqzcoc&t=10s)
 
 ---
 
