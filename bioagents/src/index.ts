@@ -16,7 +16,7 @@ export type {
 } from './core/AgentCore';
 
 // Plugin exports
-export { ExamplePlugin } from './plugins/ExamplePlugin';
+// export { ExamplePlugin } from './plugins/ExamplePlugin';
 export { DataverseHarvesterPlugin } from './plugins/DataverseHarvesterPlugin';
 export { LangChainEnricherPlugin } from './plugins/LangChainEnricherPlugin';
 export { VeramoDIDIssuerPlugin } from './plugins/VeramoDIDIssuerPlugin';
@@ -27,7 +27,7 @@ export type { EnrichmentOptions, EnrichedMetadata } from './plugins/LangChainEnr
 export type { DIDDocument, VerifiableCredential, DIDCreationResult } from './plugins/VeramoDIDIssuerPlugin';
 
 // Workflow exports
-export { default as exampleWorkflow } from './workflows/exampleWorkflow';
+// export { default as exampleWorkflow } from './workflows/exampleWorkflow';
 export { default as harvestEnrichIssueWorkflow, testHarvestWorkflow, testEnrichmentWorkflow, testDIDIssuanceWorkflow } from './workflows/harvestEnrichIssueWorkflow';
 export type { HarvestEnrichIssueInput, HarvestEnrichIssueResult } from './workflows/harvestEnrichIssueWorkflow';
 

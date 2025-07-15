@@ -4,7 +4,10 @@ import { Agent } from '@veramo/core';
 import { CredentialPlugin } from '@veramo/credential-w3c';
 import axios from 'axios';
 import { DID, Dataset, VerifiableCredential, DatasetMetadata } from '../types';
-import { dataverseAPI, DataverseFile } from '../api/dataverseApi';
+import { dataverseAPI, DataverseFile } from '../../backend/src/controllers/dataverseApi';
+
+
+
 // Backend API configuration
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
@@ -91,33 +94,9 @@ class IntegrationService {
     return result.transaction.hash;
   }
 
-  // Powergate/Filecoin Integration
-  async initializePowergate() {
-    this.powergateClient = createPow({
-      host: 'http://localhost:5173',
-      debug: true,
-    });
-
-    //The returned auth token is the only thing that gives access to the corresponding 
-    // user at a later time, so be sure to save it securely.
-    //A user auth token can later be set for the Powergate client
-    //  so that the client authenticates with the user associated with the auth token.
 
 
-    // this.powergateClient.setAdminToken("power1212gate-auth23128token")
-    // const { user } = await this.powergateClient.admin.users.create() // save this token in localStorage for later use!
-    // // return user?.token
-    // const token = "<previously generated user auth token>"
-    // pow.setToken(token)
 
-    try {
-      await this.powergateClient.health.check();
-      console.log('Powergate connected successfully');
-    } catch (error) {
-      console.error('Powergate connection failed:', error);
-      throw error;
-    }
-  }
 
   async uploadToFilecoin(data: any): Promise<{ cid: string; dealId?: string }> {
     try {
@@ -149,26 +128,6 @@ class IntegrationService {
     }
   }
 
-  async retrieveFromFilecoin(cid: string): Promise<any> {
-    if (!this.powergateClient) {
-      await this.initializePowergate();
-    }
-
-    try {
-      const stream = this.powergateClient.ffs.get(cid);
-      const chunks: Buffer[] = [];
-
-      for await (const chunk of stream) {
-        chunks.push(chunk);
-      }
-
-      const data = Buffer.concat(chunks);
-      return JSON.parse(data.toString());
-    } catch (error) {
-      console.error('Filecoin retrieval failed:', error);
-      throw error;
-    }
-  }
 
   // Dataverse Integration
   async createDatasetInDataverse(metadata: DatasetMetadata, files?: DataverseFile[]): Promise<Dataset> {
@@ -185,16 +144,22 @@ class IntegrationService {
         id: response.data.id.toString(),
         title: metadata.title,
         description: metadata.description,
-        authors: metadata.author || [],
+        author: Array.isArray(metadata.author)
+          ? (metadata.author.map(a => a.authorName).join(', ') || '')
+          : (metadata.author || ''),
         subjects: metadata.subject || [],
         keywords: metadata.keyword || [],
-        created: new Date(),
-        updated: new Date(),
         version: '1.0',
         status: 'draft',
-        culturalHeritage: metadata.culturalHeritage || false,
-        gdprCompliant: true,
         storageIdentifier: response.data.storageIdentifier,
+        language: [],
+        email: '',
+        institution: '',
+        datePublished: '',
+        fileCount: 0,
+        size: '',
+        didLinked: false,
+        metadata: {},
       };
 
       return dataset;
@@ -211,28 +176,23 @@ class IntegrationService {
       // Convert Dataverse response to our Dataset type
       const dataset: Dataset = {
         id: response.id?.toString() || '',
-        persistentId: response.persistentId || persistentId,
-        title: response.latestVersion?.metadataBlocks?.citation?.fields?.find((f: any) => f.typeName === 'title')?.value || 'Unknown',
-        description: response.latestVersion?.metadataBlocks?.citation?.fields?.find((f: any) => f.typeName === 'dsDescription')?.value?.[0]?.dsDescriptionValue?.value || '',
-        authors: response.latestVersion?.metadataBlocks?.citation?.fields?.find((f: any) => f.typeName === 'author')?.value?.map((a: any) => ({
-          name: a.authorName?.value || '',
-          affiliation: a.authorAffiliation?.value || '',
-          identifier: a.authorIdentifier?.value || '',
-          identifierScheme: a.authorIdentifierScheme?.value || ''
-        })) || [],
-        subjects: response.latestVersion?.metadataBlocks?.citation?.fields?.find((f: any) => f.typeName === 'subject')?.value || [],
-        keywords: response.latestVersion?.metadataBlocks?.citation?.fields?.find((f: any) => f.typeName === 'keyword')?.value?.map((k: any) => ({
-          value: k.keywordValue?.value || '',
-          vocabulary: k.keywordVocabulary?.value || '',
-          vocabularyURI: k.keywordVocabularyURI?.value || ''
-        })) || [],
-        created: new Date(response.createTime || Date.now()),
-        updated: new Date(response.modificationTime || Date.now()),
-        version: response.latestVersion?.versionNumber?.toString() || '1.0',
-        status: response.latestVersion?.versionState || 'draft',
-        culturalHeritage: !!response.latestVersion?.metadataBlocks?.culturalHeritage,
-        gdprCompliant: true,
-        storageIdentifier: response.storageIdentifier,
+        didId: response.didId?.toString() || persistentId,
+        title: response.title || 'Unknown',
+        description: response.description || '',
+        author: response.author || '',
+        subjects: response.subjects || [],
+        fileCount: response.fileCount || 0,
+        datePublished: response.datePublished || '',
+        institution: response.institution || '',
+        status: response.status || 'draft',
+        keywords: response.keywords || [],
+        language: response.language || [],
+        version: response.version || '1.0',
+        storageIdentifier: response.storageIdentifier || '',
+        email: response.email || '',
+        didLinked: response.didLinked || false,
+        metadata: response.metadata || {},
+        size: response.size || '',
       };
 
       return dataset;
@@ -274,119 +234,9 @@ class IntegrationService {
     }
   }
 
-  // High-level DID operations
-  async createDID(didData: Partial<DID>): Promise<DID> {
-    try {
-      // 1. Create metadata package
-      const metadata = {
-        name: didData.metadata?.name || 'Unnamed Dataset',
-        description: didData.metadata?.description || '',
-        type: didData.metadata?.type || 'dataset',
-        tags: didData.metadata?.tags || [],
-        culturalHeritage: didData.metadata?.culturalHeritage || false,
-        timestamp: new Date().toISOString(),
-      };
-
-      // 2. Create dataset in Dataverse if type is 'dataset'
-      let dataverseDataset: Dataset | null = null;
-      if (metadata.type === 'dataset') {
-        const dataverseMetadata: DatasetMetadata = {
-          title: metadata.name,
-          description: metadata.description,
-          authors: [{
-            name: didData.metadata?.author || 'DID System',
-            affiliation: didData.metadata?.institution || 'Decentralized Network',
-            identifier: '',
-            identifierScheme: ''
-          }],
-          contactName: didData.metadata?.author || 'DID System',
-          contactEmail: didData.metadata?.contactEmail || 'contact@example.com',
-          subjects: ['Computer and Information Science'],
-          keywords: metadata.tags.map(tag => ({ value: tag, vocabulary: '', vocabularyURI: '' })),
-          culturalHeritage: metadata.culturalHeritage,
-          culturalHeritageType: metadata.culturalHeritage ? 'Digital Collection' : undefined,
-          depositor: 'DID System'
-        };
-
-        dataverseDataset = await this.createDatasetInDataverse(dataverseMetadata);
-      }
-
-      // 3. Store metadata on Filecoin/IPFS
-      const enrichedMetadata = {
-        ...metadata,
-        dataverseId: dataverseDataset?.persistentId,
-      };
-      const { cid, dealId } = await this.uploadToFilecoin(enrichedMetadata);
-
-      // 4. Create DID on blockchain
-      let didId: string;
-      let txId: string;
-
-      if (didData.method === 'near') {
-        txId = await this.createDIDOnNear(enrichedMetadata);
-        didId = `did:near:testnet:${txId}`;
-      } else {
-        txId = await this.createDIDOnFlow(enrichedMetadata);
-        didId = `did:flow:testnet:${txId}`;
-      }
-
-      // 5. Link DID to Dataverse dataset if created
-      if (dataverseDataset) {
-        await dataverseAPI.linkDIDToDataset(dataverseDataset.persistentId, didId, cid);
-      }
-
-      // 6. Issue Verifiable Credential
-      const vc = await this.issueVerifiableCredential({
-        issuer: didId,
-        subject: {
-          id: didId,
-          ...enrichedMetadata,
-        },
-      });
-
-      // 7. Create DID object
-      const did: DID = {
-        id: didId,
-        method: didData.method || 'flow',
-        subject: txId,
-        created: new Date(),
-        status: 'active',
-        metadata: {
-          name: metadata.name,
-          description: metadata.description,
-          type: metadata.type as any,
-          tags: metadata.tags,
-          culturalHeritage: metadata.culturalHeritage,
-        },
-        storage: {
-          ipfsHash: cid,
-          filecoinDeal: dealId,
-        },
-        gdprConsent: {
-          granted: didData.gdprConsent?.granted || false,
-          timestamp: new Date(),
-          purposes: didData.gdprConsent?.purposes || [],
-        },
-        verifiableCredentials: [vc],
-        dataverseId: dataverseDataset?.persistentId,
-      };
-
-      // 8. Log the creation event
-      await this.logEvent('DID_CREATED', {
-        didId,
-        method: didData.method || 'flow',
-        type: metadata.type,
-        dataverseId: dataverseDataset?.persistentId,
-        ipfsHash: cid,
-        gdprConsent: didData.gdprConsent?.granted || false,
-      });
-
-      return did;
-    } catch (error) {
-      console.error('DID creation failed:', error);
-      throw error;
-    }
-  }
+  // Enhanced DID operations with new services
+  // Deprecated: DID creation should be handled by the backend only
+  // async createDID(didData: Partial<DID>): Promise<DID> { ... }
 
   async fetchDIDs(): Promise<DID[]> {
     // In a real implementation, this would fetch from your backend
@@ -428,7 +278,6 @@ class IntegrationService {
             purposes: []
           },
           verifiableCredentials: resolvedData.verifiableCredentials || [],
-          dataverseId: resolvedData.dataverse?.persistentId
         };
 
         return did;
@@ -555,6 +404,115 @@ class IntegrationService {
       console.error('Data export failed:', error);
       throw error;
     }
+  }
+
+  // Service Connectivity Tests
+  async testLighthouseConnection(): Promise<{ status: string; details?: any }> {
+    try {
+      const result = await lighthouseService.testConnection();
+      return { status: 'connected', details: result };
+    } catch (error) {
+      return { status: 'failed', details: error };
+    }
+  }
+
+  async testOriginTrailConnection(): Promise<{ status: string; details?: any }> {
+    try {
+      const result = await originTrailDKGService.testConnection();
+      return { status: 'connected', details: result };
+    } catch (error) {
+      return { status: 'failed', details: error };
+    }
+  }
+
+  async testGDPRComplianceService(): Promise<{ status: string; details?: any }> {
+    try {
+      const result = await gdprComplianceService.getComplianceStatus();
+      return { status: 'active', details: result };
+    } catch (error) {
+      return { status: 'failed', details: error };
+    }
+  }
+
+  async testBioAgentsService(): Promise<{ status: string; details?: any }> {
+    try {
+      const testData = {
+        title: 'Test Dataset',
+        description: 'This is a test dataset for connectivity verification',
+        tags: ['test', 'connectivity']
+      };
+      const result = await bioAgentsService.analyzeDataset(testData);
+      return { status: 'connected', details: result };
+    } catch (error) {
+      return { status: 'failed', details: error };
+    }
+  }
+
+  async testDataverseConnection(): Promise<{ status: string; details?: any }> {
+    try {
+      const result = await dataverseAPI.searchDatasets('test', 10, 0);
+      return { status: 'connected', details: { searchResults: result.data?.total_count || 0 } };
+    } catch (error) {
+      return { status: 'failed', details: error };
+    }
+  }
+
+  async testAllServiceConnections(): Promise<{
+    lighthouse: { status: string; details?: any };
+    originTrail: { status: string; details?: any };
+    gdpr: { status: string; details?: any };
+    bioAgents: { status: string; details?: any };
+    dataverse: { status: string; details?: any };
+    overall: 'healthy' | 'degraded' | 'unhealthy';
+  }> {
+    const [lighthouse, originTrail, gdpr, bioAgents, dataverse] = await Promise.allSettled([
+      this.testLighthouseConnection(),
+      this.testOriginTrailConnection(),
+      this.testGDPRComplianceService(),
+      this.testBioAgentsService(),
+      this.testDataverseConnection()
+    ]);
+
+    const results = {
+      lighthouse: lighthouse.status === 'fulfilled' ? lighthouse.value : { status: 'failed', details: lighthouse.reason },
+      originTrail: originTrail.status === 'fulfilled' ? originTrail.value : { status: 'failed', details: originTrail.reason },
+      gdpr: gdpr.status === 'fulfilled' ? gdpr.value : { status: 'failed', details: gdpr.reason },
+      bioAgents: bioAgents.status === 'fulfilled' ? bioAgents.value : { status: 'failed', details: bioAgents.reason },
+      dataverse: dataverse.status === 'fulfilled' ? dataverse.value : { status: 'failed', details: dataverse.reason },
+      overall: 'unhealthy' as 'healthy' | 'degraded' | 'unhealthy'
+    };
+
+    // Determine overall health
+    const connectedServices = Object.values(results).filter(service => 
+      typeof service === 'object' && service.status === 'connected' || service.status === 'active'
+    ).length;
+
+    if (connectedServices === 5) {
+      results.overall = 'healthy';
+    } else if (connectedServices >= 3) {
+      results.overall = 'degraded';
+    } else {
+      results.overall = 'unhealthy';
+    }
+
+    return results;
+  }
+
+  // Health check endpoint for monitoring
+  async getSystemHealth(): Promise<{
+    status: 'healthy' | 'degraded' | 'unhealthy';
+    timestamp: string;
+    services: any;
+    version: string;
+  }> {
+    const serviceTests = await this.testAllServiceConnections();
+    
+    return {
+      status: serviceTests.overall,
+      timestamp: new Date().toISOString(),
+      services: serviceTests,
+      version: '2.0.0' // Enhanced version with new services
+    };
   }
 }
 

@@ -117,7 +117,7 @@ const SystemFlow: React.FC = () => {
     { name: 'Data Platform', color: 'bg-secondary-500', description: 'Dataverse REST API' },
     { name: 'Agent Layer', color: 'bg-accent-500', description: 'BioAgents + LangChain.js' },
     { name: 'DID Registry', color: 'bg-indigo-500', description: 'Flow + NEAR' },
-    { name: 'Storage Layer', color: 'bg-purple-500', description: 'IPFS/Filecoin + fs-upload-dapp' }
+    { name: 'Storage Layer', color: 'bg-purple-500', description: 'IPFS/Filecoin + Lighthouse' }
   ];
 
   const getStatusIcon = (status: string) => {

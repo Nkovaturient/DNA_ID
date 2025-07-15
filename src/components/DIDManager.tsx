@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Shield, Trash2, Eye, Copy, CheckCircle, AlertCircle, Clock, Database } from 'lucide-react';
 import { useDID } from '../contexts/DIDContext';
-import { powergateService } from '../services/powergateService';
-import { dataverseAPI } from '../api/dataverseApi';
 import { format } from 'date-fns';
 
 const DIDManager: React.FC = () => {
@@ -33,38 +31,13 @@ const DIDManager: React.FC = () => {
 
   const handleCreateDID = async () => {
     try {
-      // 1. Upload file to IPFS/Filecoin if provided
-      let fileStorageResult = null;
-      if (formData.file) {
-        const fileBuffer = await formData.file.arrayBuffer();
-        // Convert ArrayBuffer to Buffer for browser compatibility
-        const buffer = Buffer.from(fileBuffer);
-        fileStorageResult = await powergateService.storeData(
-          buffer,
-          'dataset-file',
-          {
-            hot: { enabled: true, allowUnfreeze: true },
-            cold: {
-              enabled: true,
-              filecoin: {
-                repFactor: 2,
-                dealMinDuration: 518400, // ~6 months
-                verifiedDeal: true
-              }
-            }
-          }
-        );
-        console.log('File stored:', fileStorageResult);
-      }
-
-      // 2. Create enhanced metadata including Dataverse fields
+      // Create enhanced metadata including all relevant fields
       const enhancedMetadata = {
         name: formData.name,
         description: formData.description,
         type: formData.type,
         tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean),
         culturalHeritage: formData.culturalHeritage,
-        // Dataverse metadata fields
         author: formData.author,
         authorAffiliation: formData.authorAffiliation,
         contactEmail: formData.contactEmail,
@@ -72,101 +45,47 @@ const DIDManager: React.FC = () => {
         keywords: formData.keywords.split(',').map(kw => kw.trim()).filter(Boolean),
         language: formData.language,
         depositor: formData.depositor || formData.author,
-        alternativeTitle: formData.alternativeTitle,
-        fileStorageInfo: fileStorageResult
+        alternativeTitle: formData.alternativeTitle
       };
 
-      // 3. Create DID using integration service
+      // Send all data to backend via context createDID
       await createDID({
         method: formData.method,
         metadata: enhancedMetadata,
         gdprConsent: {
-          timestamp: new Date(),
           granted: formData.gdprConsent,
-          purposes: formData.purposes
-        }
+          purposes: formData.purposes,
+          timestamp: new Date()
+        },
+        file: formData.file || undefined // Pass File object directly
       });
 
-      // 4. Optional: Create dataset in Dataverse if this is a dataset DID
-      if (formData.type === 'dataset') {
-        try {
-          const dataverseMetadata = {
-            title: formData.name,
-            description: formData.description,
-            authors: [{
-              name: formData.author,
-              affiliation: formData.authorAffiliation,
-              identifier: '',
-              identifierScheme: 'ORCID'
-            }],
-            contactName: formData.author,
-            contactEmail: formData.contactEmail,
-            subjects: [formData.subject],
-            keywords: formData.keywords.split(',').map(kw => ({
-              value: kw.trim(),
-              vocabulary: '',
-              vocabularyURI: ''
-            })).filter(k => k.value),
-            culturalHeritage: formData.culturalHeritage,
-            depositor: formData.depositor || formData.author
-          };
-
-          const files = formData.file ? [{
-            name: formData.file.name,
-            file: formData.file,
-            description: `Dataset file for ${formData.name}`,
-            mimeType: formData.file.type
-          }] : undefined;
-
-          // Fix: Ensure dataverseMetadata matches DatasetMetadata type (must have 'subject' and 'author' fields)
-          const dataverseDataset = await dataverseAPI.createDataset(
-            'root',
-            {
-              ...dataverseMetadata,
-              subject: [formData.subject], // ensure 'subject' field exists as array
-              author: [{
-                authorName: formData.author,
-                authorAffiliation: formData.authorAffiliation,
-                authorIdentifier: '',
-                authorIdentifierScheme: 'ORCID'
-              }] // ensure 'author' field exists as array
-            },
-            files
-          );
-
-          console.log('Dataset created in Dataverse:', dataverseDataset);
-        } catch (error) {
-          console.warn('Failed to create dataset in Dataverse:', error);
-          // Don't fail the entire process if Dataverse creation fails
-        }
-      }
+      // Reset form after successful creation
+      setShowCreateForm(false);
+      setFormData({
+        method: 'flow',
+        name: '',
+        description: '',
+        type: 'dataset',
+        tags: '',
+        culturalHeritage: false,
+        gdprConsent: false,
+        purposes: [],
+        author: '',
+        authorAffiliation: '',
+        contactEmail: '',
+        subject: 'Cultural Heritage',
+        keywords: '',
+        language: 'en',
+        depositor: '',
+        alternativeTitle: '',
+        file: null
+      });
     } catch (error) {
       console.error('DID creation failed:', error);
       alert('Failed to create DID. Please try again.');
       return;
     }
-
-    setShowCreateForm(false);
-    setFormData({
-      method: 'flow',
-      name: '',
-      description: '',
-      type: 'dataset',
-      tags: '',
-      culturalHeritage: false,
-      gdprConsent: false,
-      purposes: [],
-      // Reset Dataverse metadata fields
-      author: '',
-      authorAffiliation: '',
-      contactEmail: '',
-      subject: 'Cultural Heritage',
-      keywords: '',
-      language: 'en',
-      depositor: '',
-      alternativeTitle: '',
-      file: null
-    });
   };
 
   const getStatusIcon = (status: string) => {

@@ -1,8 +1,10 @@
-// DEPRECATED: Frontend Powergate service removed.
-// All Powergate operations now handled by backend API.
-// Use integrationService.uploadToFilecoin() instead.
+// Frontend Powergate service - now uses backend API
+// All Powergate operations are handled by the backend server
 
 import { DID, VerifiableCredential } from '../types';
+
+// Backend API configuration
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
 export interface StorageConfig {
   hot: {
@@ -55,58 +57,23 @@ export interface StorageJob {
 }
 
 export class PowergateService {
-  private client: any = null;
-  private token: string | null = null;
   private isInitialized = false;
 
   constructor() {
-    this.initializeClient();
+    this.isInitialized = true;
+    console.log('[Powergate] Frontend service initialized - using backend API');
   }
 
   /**
-   * Initialize Powergate client
+   * Check backend connectivity
    */
-  private async initializeClient(): Promise<void> {
+  async checkConnection(): Promise<boolean> {
     try {
-      const powergateHost = import.meta.env.VITE_POWERGATE_HOST || 'http://localhost:5173';      
-      this.client = createPow({
-        host: powergateHost,
-        debug: import.meta.env.DEV || false,
-      });
-
-      this.isInitialized = true;
-      console.log('[Powergate] Client initialized successfully');
-    } catch (error: any) {
-      console.error('[Powergate] Initialization failed:', error);
-      throw new Error(`Powergate initialization failed: ${error.message}`);
-    }
-  }
-
-  /**
-   * Create new user and get auth token
-   */
-  async createUser(): Promise<string> {
-    try {
-      if (!this.client) {
-        await this.initializeClient();
-      }
-
-      // Check if we have a stored token
-      const storedToken = localStorage.getItem('powergate_token');
-      if (!storedToken) {
-      const { user } = await this.client.admin.users.create();
-      this.token = user?.token;
-      this.client.setAdminToken(this.token);
-     localStorage.setItem('powergate_token', user?.token)
-      } else {
-        this.client.setToken(storedToken)
-      }
-      
-      console.log('[Powergate] New user created with token');
-      return this.token;
+      const response = await fetch(`${BACKEND_URL}/health`);
+      return response.ok;
     } catch (error) {
-      console.error('[Powergate] User creation failed:', error);
-      throw error;
+      console.error('[Powergate] Backend connection failed:', error);
+      return false;
     }
   }
 
@@ -214,7 +181,7 @@ export class PowergateService {
   }
 
   /**
-   * Store arbitrary data with custom storage configuration
+   * Store arbitrary data using backend API
    */
   async storeData(
     data: Buffer | string,
@@ -222,68 +189,37 @@ export class PowergateService {
     config?: StorageConfig
   ): Promise<StorageResult> {
     try {
-      if (!this.client) {
+      if (!this.isInitialized) {
         throw new Error('Powergate client not initialized or no auth token');
       }
 
-      // Convert string to buffer if needed
-      const buffer = typeof data === 'string' ? Buffer.from(data) : data;
-
-      // Add to hot storage (IPFS)
-      const { cid } = await this.client.ffs.addToHot(buffer);
-      console.log(`[Powergate] Data added to IPFS with CID: ${cid}`);
-
-      // Prepare storage config
-      const storageConfig = config || {
-        hot: {
-          enabled: true,
-          allowUnfreeze: true
+      // Convert data to base64 for transport
+      const dataToSend = typeof data === 'string' ? data : data.toString('base64');
+      
+      const response = await fetch(`${BACKEND_URL}/api/storage/upload`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        cold: {
-          enabled: true,
-          filecoin: {
-            repFactor: 1,
-            dealMinDuration: 518400, // ~6 months
-            verifiedDeal: false
-          }
-        }
-      };
+        body: JSON.stringify({
+          data: dataToSend,
+          dataType,
+          config
+        })
+      });
 
-      let jobId: string | undefined;
-      
-      // Create Filecoin storage deal if cold storage is enabled
-      if (storageConfig.cold.enabled) {
-        const job = await this.client.ffs.pushStorageConfig(cid, storageConfig);
-        jobId = job.jobId;
-        console.log(`[Powergate] Storage job created: ${jobId}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Storage upload failed');
       }
 
-      // Get storage info
-      const info = await this.client.ffs.info();
+      const result = await response.json();
+      console.log(`[Powergate] Data stored via backend API: ${result.data.cid}`);
       
-      const result: StorageResult = {
-        cid,
-        jobId,
-        size: buffer.length,
-        timestamp: new Date().toISOString(),
-        hot: {
-          enabled: storageConfig.hot.enabled,
-          size: buffer.length,
-          ipfsNode: info.defaultStorageConfig?.hot?.ipfs?.addTimeout || 'default'
-        }
-      };
-
-      if (jobId) {
-        result.cold = {
-          enabled: true,
-          jobId
-        };
-      }
-
-      return result;
-    } catch (error) {
+      return result.data;
+    } catch (error: any) {
       console.error('[Powergate] Data storage failed:', error);
-      throw error;
+      throw new Error(`Powergate client not initialized or no auth token`);
     }
   }
 

@@ -2,11 +2,11 @@
   "name": "dna_id",
   "version": "1.0.0",
   "description": " DID Infrastructure with Powergate, BioAgents, and Dataverse Integration",
-  "main": "dist/index.js",
+  "main": "dist/server.js",
   "scripts": {
-    "dev": "nodemon --exec ts-node src/index.ts",
+    "dev": "nodemon --exec ts-node src/server.ts",
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start": "node dist/server.js",
     "test": "jest",
     "lint": "eslint src/**/*.ts",
     "powergate:start": "docker-compose up -d powergate",
@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@langchain/openai": "^0.3.17",
+    "@lighthouse-web3/sdk": "^0.4.0",
     "@onflow/fcl": "^1.19.0",
     "@onflow/types": "^1.4.1",
     "@prisma/client": "^5.22.0",
@@ -24,6 +25,7 @@
     "bull": "^4.16.5",
     "compression": "^1.8.0",
     "cors": "^2.8.5",
+    "dkg.js": "^8.1.1-rc.2",
     "dotenv": "^16.6.1",
     "express": "^4.21.2",
     "express-rate-limit": "^6.11.2",
@@ -38,10 +40,8 @@
     "near-api-js": "^2.1.4",
     "node-cron": "^3.0.3",
     "prisma": "^5.22.0",
-    "redis": "^4.7.1",
     "socket.io": "^4.8.1",
-    "sqlite3": "^5.1.7",
-    "uuid": "^9.0.1",
+    "uuid": "^11.1.0",
     "winston": "^3.17.0"
   },
   "devDependencies": {

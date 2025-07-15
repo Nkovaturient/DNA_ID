@@ -26,7 +26,7 @@ export interface DID {
 
 interface DIDContextType {
   dids: DID[];
-  createDID: (data: Partial<DID>) => Promise<DID>;
+  createDID: (data: Partial<DID> & { file?: any }) => Promise<DID>;
   updateDID: (id: string, updates: Partial<DID>) => void;
   revokeDID: (id: string) => void;
   getDID: (id: string) => DID | undefined;
@@ -69,43 +69,85 @@ export const DIDProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   ]);
 
-  const createDID = async (data: Partial<DID>): Promise<DID> => {
-    const newDID: DID = {
-      id: `did:${data.method || 'flow'}:mainnet:0x${Math.random().toString(16).substr(2, 16)}`,
-      method: data.method || 'flow',
-      subject: `0x${Math.random().toString(16).substr(2, 16)}`,
-      created: new Date(),
-      status: 'active',
-      metadata: {
-        name: data.metadata?.name || 'Unnamed Dataset',
-        description: data.metadata?.description || '',
-        type: data.metadata?.type || 'dataset',
-        tags: data.metadata?.tags || [],
-        culturalHeritage: data.metadata?.culturalHeritage
-      },
-      storage: {
-        ipfsHash: `Qm${Math.random().toString(36).substr(2, 44)}`,
-        filecoinDeal: `bafk2${Math.random().toString(36).substr(2, 50)}`
-      },
-      gdprConsent: {
-        granted: data.gdprConsent?.granted || false,
-        timestamp: new Date(),
-        purposes: data.gdprConsent?.purposes || []
-      }
-    };
+  const createDID = async (data: Partial<DID> & { file?: any }): Promise<DID> => {
+    try {
+      // Call the backend API for DID creation
+      const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
-    setDids(prev => [...prev, newDID]);
-    return newDID;
+      // Create FormData for multipart upload
+      const formData = new FormData();
+      
+      // Add metadata and GDPR consent as JSON strings
+      formData.append('method', data.method || 'flow');
+      formData.append('metadata', JSON.stringify(data.metadata));
+      formData.append('gdprConsent', JSON.stringify(data.gdprConsent));
+      
+      // Add file if provided
+      if (data.file) {
+        // If file is already a File object, use it directly
+        if (data.file instanceof File) {
+          formData.append('file', data.file);
+        } else if (data.file.data) {
+          // If file is base64 data, convert back to File object
+          const base64Data = data.file.data;
+          const binaryString = atob(base64Data);
+          const bytes = new Uint8Array(binaryString.length);
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+          const file = new File([bytes], data.file.name, { type: data.file.type });
+          formData.append('file', file);
+        }
+      }
+
+      const response = await fetch(`${BACKEND_URL}/api/did/create`, {
+        method: 'POST',
+        body: formData 
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'DID creation failed');
+      }
+
+      const result = await response.json();
+      const backendDID = result.data;
+
+      // Transform backend response to match our DID interface
+      const newDID: DID = {
+        id: backendDID.id,
+        method: backendDID.method,
+        subject: backendDID.subject,
+        created: new Date(backendDID.created),
+        status: backendDID.status,
+        metadata: backendDID.metadata,
+        storage: {
+          ipfsHash: backendDID.storage.ipfsHash,
+          filecoinDeal: backendDID.storage.filecoinDeal
+        },
+        gdprConsent: {
+          granted: backendDID.gdprConsent.granted,
+          timestamp: new Date(backendDID.gdprConsent.timestamp),
+          purposes: backendDID.gdprConsent.purposes
+        }
+      };
+
+      setDids(prev => [...prev, newDID]);
+      return newDID;
+    } catch (error: any) {
+      console.error('DID creation failed:', error);
+      throw error;
+    }
   };
 
   const updateDID = (id: string, updates: Partial<DID>) => {
-    setDids(prev => prev.map(did => 
+    setDids(prev => prev.map(did =>
       did.id === id ? { ...did, ...updates } : did
     ));
   };
 
   const revokeDID = (id: string) => {
-    setDids(prev => prev.map(did => 
+    setDids(prev => prev.map(did =>
       did.id === id ? { ...did, status: 'revoked' as const } : did
     ));
   };

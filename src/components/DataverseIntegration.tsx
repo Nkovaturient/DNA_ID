@@ -8,7 +8,8 @@ import {
   RefreshCw,
   AlertTriangle
 } from 'lucide-react';
-import { dataverseAPI } from '../api/dataverseApi';
+import { dataverseAPI } from '../../backend/src/controllers/dataverseApi';
+import { backendService } from '../services/backendService';
 
 interface DataverseDataset {
   id: string;
@@ -144,12 +145,27 @@ const DataverseIntegration: React.FC = () => {
   const handleLinkDID = async (datasetId: string) => {
     setLinkingInProgress(datasetId);
     
-    // Simulate DID linking process
-    setTimeout(() => {
+    try {
+      // Use backend service to link DID to dataset
+      const didId = `did:flow:testnet:${Date.now()}`;
+      await backendService.linkDIDToDataverse(datasetId, didId);
+      
+      // Update local state to reflect the change
+      setDatasets(prevDatasets => 
+        prevDatasets.map(dataset => 
+          dataset.id === datasetId 
+            ? { ...dataset, didLinked: true, didId }
+            : dataset
+        )
+      );
+      
+      console.log(`Successfully linked DID to dataset ${datasetId}`);
+    } catch (error) {
+      console.error('Failed to link DID:', error);
+      // You could add error handling UI here
+    } finally {
       setLinkingInProgress(null);
-      // In real implementation, this would update the dataset with DID
-      console.log(`Linked DID to dataset ${datasetId}`);
-    }, 3000);
+    }
   };
 
   return (

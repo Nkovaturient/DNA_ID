@@ -1,6 +1,6 @@
-# HeliXID Backend
+# DNA_ID Server
 
-Backend service for the HeliXID Decentralized Identity Infrastructure with Powergate, BioAgents, and Dataverse integration.
+Backend service for the DNA_ID Decentralized Identity Infrastructure with Powergate, BioAgents, and Dataverse integration.
 
 ## 🚀 Features
 

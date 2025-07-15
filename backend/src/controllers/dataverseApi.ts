@@ -1,5 +1,5 @@
 import axios, { AxiosInstance} from 'axios';
-import { Dataset, DatasetMetadata, AppError } from '../types';
+import { Dataset, DatasetMetadata, AppError } from '../types/interface';
 
 export interface DataverseUploadResponse {
   status: string;
@@ -27,8 +27,8 @@ export class DataverseAPI {
   private baseUrl: string;
 
   constructor() {
-    this.baseUrl = import.meta.env.VITE_DATAVERSE_API_URL || 'https://demo.dataverse.org';
-    this.apiKey = import.meta.env.VITE_DATAVERSE_API_KEY || '';
+    this.baseUrl = process.env.DATAVERSE_API_URL || 'https://demo.dataverse.org';
+    this.apiKey = process.env.DATAVERSE_API_KEY || '';
     
     this.client = axios.create({
       baseURL: this.baseUrl,

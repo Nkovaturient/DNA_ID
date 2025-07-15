@@ -54,12 +54,25 @@ export interface VerifiableCredential {
 }
 
 export interface Dataset {
+  persistentId: any;
+  metadataBlocks: any;
+  publicationDate: any;
+  createTime: any;
+  modificationTime: any;
+  versionState: any;
+  versionNumber: any;
+  minorVersionNumber: any;
   id: string;
   doi?: string;
   handle?: string;
   title: string;
   description: string;
   author: string;
+  keywords: String[]
+  language: string[];
+  version: string;
+  storageIdentifier: string;
+  email: string;
   institution: string;
   datePublished: string;
   fileCount: number;

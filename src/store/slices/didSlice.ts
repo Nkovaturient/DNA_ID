@@ -18,7 +18,23 @@ export const createDID = createAsyncThunk(
   'did/create',
   async (didData: Partial<DID>, { rejectWithValue }) => {
     try {
-      const result = await integrationService.createDID(didData);
+      // Use backendService for DID creation
+      const { backendService } = await import('../../services/backendService');
+      let gdprConsent: { granted: boolean; purposes: string[]; lawfulBasis: 'consent' | 'legitimate_interests' } = { granted: false, purposes: [], lawfulBasis: 'legitimate_interests' };
+      if (didData.gdprConsent) {
+        gdprConsent = {
+          granted: didData.gdprConsent.granted,
+          purposes: didData.gdprConsent.purposes,
+          lawfulBasis: (didData.gdprConsent as any).lawfulBasis || 'legitimate_interests'
+        };
+      }
+      const didRequest = {
+        method: didData.method || 'flow',
+        metadata: didData.metadata || { name: '', description: '', type: 'dataset', tags: [] },
+        gdprConsent,
+        file: (didData as any).file // Pass file if present
+      };
+      const result = await backendService.createDID(didRequest);
       return result;
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to create DID');

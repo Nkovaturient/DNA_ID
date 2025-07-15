@@ -1,7 +1,6 @@
 import { createHeliXIDBioAgent, AgentCore, AgentConfig } from '../../bioagents/src';
 import dotenv from 'dotenv';
 
-// Load environment variables
 dotenv.config();
 
 let bioAgent: AgentCore | null = null;
