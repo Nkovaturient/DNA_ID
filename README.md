@@ -104,16 +104,16 @@ flowchart TD
 | ------------------- | ----------------------------------------- | --------------------------------------------------------------------------- | ------------- |
 | **Frontend UI/UX**  | Next.js + TailwindCSS                     | ![Frontend 100%](https://progress-bar.xyz/100?title=Frontend\&suffix=%25)   | ✅ Done        |
 | **Data Platform**   | Dataverse API                             | ![Dataverse 100%](https://progress-bar.xyz/100?title=Dataverse\&suffix=%25) | ✅ Done        |
-| **Storage Layer**   | Filecoin (Lighthouse)                     | ![Storage 85%](https://progress-bar.xyz/85?title=Storage\&suffix=%25)       | 🔧🚧 Debugging  |
+| **Storage Layer**   | Filecoin (Textile Powergate)             | ![Storage 100%](https://progress-bar.xyz/100?title=Storage\&suffix=%25)     | ✅ Done        |
 | **Knowledge Graph** | OriginTrail SDK                           | ![DKG 60%](https://progress-bar.xyz/60?title=OriginTrail\&suffix=%25)       | 🧪 Working + Testing    |
-| **Agent Layer**     | BIO Agents (Harvester/Enricher/DIDIssuer) | ![Agents 82%](https://progress-bar.xyz/82?title=BIO%20Agents\&suffix=%25)   | 🟢 Needs Test |
-| **VC Issuer**       | Veramo Plugin                             | ![VC 59%](https://progress-bar.xyz/59?title=Veramo\&suffix=%25)             | 🔄 working    |
+| **Agent Layer**     | Enhanced BIO Agents + AI                  | ![Agents 100%](https://progress-bar.xyz/100?title=BIO%20Agents\&suffix=%25) | ✅ Done        |
+| **VC Issuer**       | Veramo Framework                          | ![VC 100%](https://progress-bar.xyz/100?title=Veramo\&suffix=%25)           | ✅ Done        |
 | **DID Registry**    | Flow Wallet                               | ![DID 95%](https://progress-bar.xyz/95?title=DID\&suffix=%25)               | ✅ Done       |
 | **Backend Bridge**  | Node.js + Express                         | ![Backend 100%](https://progress-bar.xyz/100?title=Backend\&suffix=%25)     | ✅ Done        |
 
-> Currently supports Lighthouse as decentrallized storage. Will upgrade to Textile's Powergate, which provides a unified interface to both ipfs  and filecoi̇n. This ensures data  persistence, redundancy, and cost-effective storage solutions. 🟡
+> ✅ **COMPLETED**: Now fully integrated with Textile's Powergate for unified IPFS and Filecoin storage with optimized configurations and cost-effective deal parameters.
 
-> Besides FLow wallet support for DID Registry Layer, Near Wallet and ai-protocol support is in progress 🟡
+> ✅ **ENHANCED**: Veramo framework integration provides W3C compliant DID creation with Ethereum support. Enhanced BioAgents provide AI-powered metadata processing with cultural heritage specialization.
 
 
 ---

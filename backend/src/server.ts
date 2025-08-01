@@ -10,6 +10,9 @@ import { dataverseRoutes } from './routes/dataverse';
 import { didRoutes } from './routes/did';
 import { lighthouseRoutes } from './routes/lighthouse';
 import { metadataRoutes } from './routes/metadata';
+import { enhancedStorageRoutes } from './routes/enhanced-storage';
+import { enhancedBioAgentsRoutes } from './routes/enhanced-bioagents';
+import { enhancedDIDRoutes } from './routes/enhanced-did';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -39,6 +42,11 @@ app.use('/api/dataverse', dataverseRoutes);
 app.use('/api/did', didRoutes);
 app.use('/api/lighthouse', lighthouseRoutes);
 app.use('/api/metadata', metadataRoutes);
+
+// Enhanced routes with full integration
+app.use('/api/enhanced-storage', enhancedStorageRoutes);
+app.use('/api/enhanced-bioagents', enhancedBioAgentsRoutes);
+app.use('/api/enhanced-did', enhancedDIDRoutes);
 
 
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

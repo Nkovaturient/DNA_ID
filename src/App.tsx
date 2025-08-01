@@ -15,8 +15,10 @@ import DIDManager from './components/DIDManager';
 import DatasetExplorer from './components/DatasetExplorer';
 import GDPRConsent from './components/GDPRConsent';
 import SystemFlow from './components/SystemFlow';
+import EnhancedSystemFlow from './components/EnhancedSystemFlow';
 import BioAgentsIntegration from './components/BioAgentsIntegration';
 import DataverseIntegration from './components/DataverseIntegration';
+import EnhancedDIDManager from './components/EnhancedDIDManager';
 import Footer from './components/Footer';
 
 // Integration initialization
@@ -56,13 +58,13 @@ const AppContent: React.FC = () => {
   const renderActiveSection = () => {
     switch (activeSection) {
       case 'did':
-        return <DIDManager />;
+        return <EnhancedDIDManager />;
       case 'datasets':
         return <DatasetExplorer />;
       case 'gdpr':
         return <GDPRConsent />;
       case 'system-flow':
-        return <SystemFlow />;
+        return <EnhancedSystemFlow />;
       case 'bioagents':
         return <BioAgentsIntegration />;
       case 'dataverse':
