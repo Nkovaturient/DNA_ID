@@ -82,22 +82,6 @@
 
 ---
 
-## BIOAGENTS CUSTOM WORKFLOW BRIDGE
-
-> **Automated pipeline for dataset onboarding, enrichment, compliance, and persistent identifier issuance:**
-
-```mermaid
-flowchart TD
-    A[Harvest Metadata from Dataverse]
-    B[AI Enrichment via BioAgents]
-    C[GDPR Compliance Check]
-    D[Issue DID & Verifiable Credential]
-    E[Publish to OriginTrail DKG]
-    A --> B --> C --> D --> E
-```
-
----
-
 ## Progress 
 
 | Layer               | Tech Stack                                | Progress                                                                    | Status        |
