@@ -41,6 +41,7 @@
 
 > **Researchers and cultural institutions need a better way to manage their digital identity and metadata.**
 
+
 ---
 
 ## 🔰 Solution 💠
@@ -63,6 +64,7 @@
 ---
 
 ## Tech Integrations Highlights
+
 - **W3C Decentralized Identifiers (DID)**
 - **GDPR Compliance & Consent Management**
 - **Dataverse Academic Repository Integration**
